@@ -1,0 +1,17 @@
+(specifications->manifest
+ (list "ghdl-clang"
+       "ghdl-yosys-plugin"
+       "python-vunit"
+       "python-hdlmake"
+       "python-cocotb"
+       "yosys"
+       "tcl"
+       "bash"
+       "tcllib"
+       "nss-certs"
+       "make"
+       "fd"
+       "git"
+       "which"
+       "findutils"
+       "coreutils"))

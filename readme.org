@@ -1,0 +1,73 @@
+*Build a docker image with [[https://infosec.press/csantosb/use-guix][guix]] and push to ghcr.io*
+
+* Build
+
+Build a docker image with
+
+#+begin_src sh
+  image=$(guix time-machine --channels=channels.scm -- \
+               pack -f docker \
+               -S /bin=bin \
+               --save-provenance \
+               -m manifest.scm)
+#+end_src
+
+Load image to the store
+
+#+begin_src sh
+  docker load < $image
+#+end_src
+
+Check contents
+
+#+begin_src sh
+  docker images
+#+end_src
+
+* Push
+
+Tag image
+
+#+begin_src sh
+  docker tag IMID ghcr.io/csantosb/hdl:RELEASE
+#+end_src
+
+Login to =ghcr.io=
+
+#+begin_src sh
+  docker login -u csantosb -p PASSWORD ghcr.io
+#+end_src
+
+Push remotely
+
+#+begin_src sh
+  docker push ghcr.io/csantosb/hdl:RELEASE
+#+end_src
+
+* Test
+
+Using [[https://github.com/stnolting/neorv32][neorv32]]
+
+#+begin_src sh
+  docker pull ghcr.io/csantosb/hdl
+  docker run -ti ID bash
+  git clone --depth=1 https://github.com/stnolting/neorv32
+  cd neorv32
+  git clone --depth=1 https://github.com/stnolting/neorv32-vunit test
+  cd test
+  rm -rf neorv32
+  ln -sf ../../neorv32 neorv32
+  python3 sim/run.py --ci-mode -v
+#+end_src
+
+* creds                                                              :encrypt:
+
+-----BEGIN PGP MESSAGE-----
+
+hE4DfhtVyiTNLRISAQdAgP0C9zoFhtZJBtcSU/uxlX+yfDqR//lu8YCHQBcG6Xcg
+oRgM8KCM4xg8aaHFXWkR9UGwylDQvjv9h7sFyZBqZfXSiAGRcd/W0Tg0UgYg8Qm+
+wxGWjQybYP0zK21kCkhAibAAxDR2Weghnd32TLQZoJ9R0XlSLhigdjGFUgchmWOA
+4dj7ntgCftOEnz3MG57EMBBDLDXP7/Kw2z9aJeGKKxZpLR1hVbCoIrMvRp5cfbYp
+GKTcJFOUGXpfS30GWVzPvUsBbArARa9zWQY=
+=CKbV
+-----END PGP MESSAGE-----
