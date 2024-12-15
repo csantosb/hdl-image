@@ -1,0 +1,25 @@
+# TODO: Try skopeo to push images: https://yhetil.org/guix-user/ZmLnWnKwRL24Mc2T@jurong/t/#u
+
+# Neat tip to upload your Guix-built image to a registry: use Skopeo.
+
+#   guix shell skopeo -- skopeo login registry.gitlab.inria.fr
+#   guix shell skopeo -- skopeo copy \
+#     docker-archive:///gnu/store/…-docker-image.tar.gz \
+#     docker://registry.gitlab.inria.fr/… \
+#     --insecure-policy
+
+# (“Insecure policy”, what could possibly go wrong?)
+
+shell: true
+image: guix
+tasks:
+  - system_update: |
+      cd hdl-image
+      sudo guix system reconfigure system.scm
+  - check: |
+      ps aux | grep docker
+      ps aux | grep containerd
+  - image: |
+      image=$(guix pack -f docker -S /bin=bin python)
+      docker load < $image
+      docker images
