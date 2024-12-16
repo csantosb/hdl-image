@@ -15,21 +15,25 @@ Build a docker image with
 Load image to the store
 
 #+begin_src sh
-  docker load < $image
+  tag=$(docker load -i $image)
+#+end_src
+
+* Push
+
+#+begin_src sh
+  registry=ghcr.io/csantosb/hdl:RELEASE
+#+end_src
+
+Tag image
+
+#+begin_src sh
+  docker tag ${tag##*"Loaded image: "} $registry
 #+end_src
 
 Check contents
 
 #+begin_src sh
   docker images
-#+end_src
-
-* Push
-
-Tag image
-
-#+begin_src sh
-  docker tag IMID ghcr.io/csantosb/hdl:RELEASE
 #+end_src
 
 Login to =ghcr.io=
@@ -41,7 +45,7 @@ Login to =ghcr.io=
 Push remotely
 
 #+begin_src sh
-  docker push ghcr.io/csantosb/hdl:RELEASE
+  docker push $registry
 #+end_src
 
 * Test
@@ -59,6 +63,19 @@ Using [[https://github.com/stnolting/neorv32][neorv32]]
   ln -sf ../../neorv32 neorv32
   python3 sim/run.py --ci-mode -v
 #+end_src
+
+* skopeo
+
+Try skopeo to push images: https://yhetil.org/guix-user/ZmLnWnKwRL24Mc2T@jurong/t/#u
+
+#+begin_src sh
+  guix shell skopeo -- skopeo login registry.gitlab.inria.fr
+  guix shell skopeo -- skopeo copy docker-archive://$image \
+       docker://registry.gitlab.inria.fr/… --insecure-policy
+#+end_src
+
+
+# (“Insecure policy”, what could possibly go wrong?)
 
 * creds                                                              :encrypt:
 
